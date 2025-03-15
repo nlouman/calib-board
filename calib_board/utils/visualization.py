@@ -171,7 +171,8 @@ def visualize_2d(scene: SceneCheckerboard,
             aspect_ratio = res_y / res_x
             ax.set_aspect(aspect_ratio / ax.get_data_ratio())
 
-            title = 'Observations in cam ' + str(camera_id)
+            escaped_cam_id = latex_escape_underscores(str(camera_id))
+            title = rf"Observations in cam ${escaped_cam_id}$"
             plt.title(title)
 
             plt.show(block=False)
@@ -200,7 +201,8 @@ def visualize_2d(scene: SceneCheckerboard,
             aspect_ratio = res_y / res_x
             ax.set_aspect(aspect_ratio / ax.get_data_ratio())
 
-            title = 'Observations in cam ' + str(camera_id)
+            escaped_cam_id = latex_escape_underscores(str(camera_id))
+            title = rf"Observations in cam ${escaped_cam_id}$"
             ax.set_title(title)
     
             
@@ -392,17 +394,35 @@ def plot_observations_in_camera(correspondences: Correspondences,
             ax.plot(observation._2d[:, 0], observation._2d[:, 1], marker, markersize=4, markeredgewidth=1, color=color, alpha=alpha)  
             ax.text(observation._2d[0, 0], observation._2d[0, 1], checker_id, color=color, fontsize=10, alpha=1)
 
-def plot_scene(scene: SceneCheckerboard, show_ids = False) -> None: 
+def latex_escape_underscores(text: str) -> str:
+    """Replace underscores with escaped underscores for LaTeX."""
+    return text.replace("_", r"\_")
+
+def plot_scene(scene: SceneCheckerboard, show_ids=False) -> None:
+    """
+    Plots each camera and checker in the scene, properly escaping underscores
+    so LaTeX doesn't interpret them as multiple subscripts.
+    """
     mod = MODIFIERS[scene.type]
-    
-    for camera in scene.cameras.values(): 
-        name = r"$\{" + mod + r"{C}_{" + str(camera.id) + r"}\}$"
+
+    for camera in scene.cameras.values():
+        escaped_cam_id = latex_escape_underscores(str(camera.id))
+        # Build something like: $\{\hat{C}_{zed\_x\_m}\}$
+        # We do this by concatenating normal strings:
+        #   "$\\{" ->  `$\{`
+        #   + mod -> e.g. `\hat`
+        #   + "{C}_{" -> `{C}_{`
+        #   + escaped_cam_id -> e.g. `zed\_x\_m`
+        #   + "}\\}$" -> `}\}` (literal closing brace) + `$`
+        name = "$\\{" + mod + "{C}_{" + escaped_cam_id + "}\\}$"
         camera.plot(name)
 
-    for checker in scene.checkers.values(): 
+    for checker in scene.checkers.values():
         if show_ids:
-            name = r"$\{" + mod + r"{B}_{" + str(checker.id) + r"}\}$"
-        else: 
+            escaped_checker_id = latex_escape_underscores(str(checker.id))
+            # Similarly: $\{\hat{B}_{checker\_id}\}$
+            name = "$\\{" + mod + "{B}_{" + escaped_checker_id + "}\\}$"
+        else:
             name = ""
         checker.plot(name)
 
