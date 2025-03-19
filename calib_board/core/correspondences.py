@@ -57,7 +57,7 @@ def filter_correspondences_with_non_nan_points(correspondences, threshold):
             non_nan_lines = np.sum(~np.isnan(checkerboard_obs._2d).any(axis=1))
             if non_nan_lines >= threshold:
                 filtered_cam_correspondences[id] = checkerboard_obs
-            # else: 
-            #     print("discard id", id, "from camera", cam_name, "because it has only", non_nan_lines, "non-NaN 2D points")
+            else: 
+                print("discard id", id, "from camera", cam_name, "because it has only", non_nan_lines, "non-NaN 2D points")
         filtered_correspondences[cam_name] = filtered_cam_correspondences
     return filtered_correspondences

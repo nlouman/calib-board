@@ -34,12 +34,12 @@ np.random.seed(1)
 # PATHS
 images_parent_folder = str(
     Path(
-        r"/home/balgrist/dev/orx/orx_middleware/kuka_camera/src/user_applications/calibration_captures/calibration_020"
+        r"/home/fred/dev/orx/orx_middleware/ros2_ws/src/kuka_camera/src/user_applications/calibration_captures/calibration_019"
     )
 )
 intrinsics_folder = str(
     Path(
-        r"/home/balgrist/dev/orx/orx_middleware/kuka_camera/src/user_applications/calibration_captures/calibrate_intrinsics_output/camera_intrinsics"
+        r"/home/fred/dev/orx/orx_middleware/ros2_ws/src/kuka_camera/src/user_applications/calibration_captures/calibrate_intrinsics_output/camera_intrinsics"
     )
 )
 
@@ -100,7 +100,12 @@ correspondences_nparray = detect_board_corners(
     display=show_detection_images,
     save_images_with_overlayed_detected_corners=save_detection_images,
 )
+
+print(correspondences_nparray)
+
 correspondences = convert_correspondences_array_to_checker_correspondences(correspondences_nparray)
+
+print(correspondences)
 
 # # save_to_pickle(out_folder_calib / "correspondences_detected.pkl", correspondences)
 # # correspondences = load_from_pickle("results/correspondences_detected.pkl")
@@ -112,6 +117,8 @@ correspondences = convert_correspondences_array_to_checker_correspondences(corre
 correspondences = filter_correspondences_with_non_nan_points(
     correspondences, external_calibrator_config.min_number_of_valid_observed_points_per_checkerboard_view
 )
+
+print(correspondences)
 # keep only chessboard with sufficient track length
 correspondences = filter_correspondences_with_track_length(correspondences, external_calibrator_config.min_track_length)
 
@@ -182,4 +189,14 @@ if show_viz or save_viz:
         print("2d errors visualization saved to", save_path)
 
     if show_viz:
-        plt.show()
+        def on_key(event):
+            if event.key == 'q': # Quit the program completely
+                plt.close('all')
+                exit() # Exit the program
+            elif event.key == 'c': # Close the current window
+                plt.close()
+
+        fig = plt.gcf() # Get the current figure
+        fig.canvas.mpl_connect('key_press_event', on_key)
+        plt.show() 
+        
