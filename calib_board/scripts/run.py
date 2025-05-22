@@ -282,7 +282,7 @@ def main():
         intrinsics_folder=args.intrinsics_folder,
         undistort=True,
         display=False,  # Set to True if you want to see the detected corners
-        save_images_with_overlayed_detected_corners=False,  # Set to True if you want to save images with detected corners
+        save_images_with_overlayed_detected_corners=True,  # Set to True if you want to save images with detected corners
     )
 
     correspondences = convert_correspondences_array_to_checker_correspondences(correspondences_nparray)
@@ -323,6 +323,18 @@ def main():
     generic_scene.save_cameras_poses_to_json(out_folder_calib / "camera_poses.json")
     save_to_pickle(out_folder_calib / "scene_estimate.pkl", generic_scene)
     save_to_pickle(out_folder_calib / "correspondences.pkl", generic_obsv)
+
+    # Evaluate and save metrics
+    metrics = eval_generic_scene(
+        generic_scene,
+        generic_obsv,
+        camera_groups=None,
+        save_to_json=True,
+        output_path=out_folder_calib / "metrics.json",
+        print_=True,
+    )
+
+    print(metrics)
 
     print(f"Results saved in {out_folder_calib}")
 

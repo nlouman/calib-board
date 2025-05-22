@@ -61,6 +61,8 @@ class ExternalCalibrator:
 
         if len(image_points):
                 image_points = np.vstack(image_points)
+                print(f"cam {cam_id} has {len(image_points)} conform points")
+                print(f"cam intrinsics {self.intrinsics[cam_id]}")
                 score = self.view_score(image_points, self.intrinsics[cam_id].resolution)
         else: 
             score = 0
@@ -167,9 +169,14 @@ class ExternalCalibrator:
 
             if len(image_points):
                 image_points = np.vstack(image_points)
+                print(f"cam {cam1_id} has {len(image_points)} conform points")
+                print(f"cam intrinsics {self.intrinsics[cam1_id]}")
                 score = self.view_score(image_points, self.intrinsics[cam1_id].resolution)
             else: 
                 score = 0
+
+            print(f"cam {cam1_id} score: {score}")
+            print(f"cam {cam0_id}")
 
             score = self.view_score(image_points, self.intrinsics[cam1_id].resolution)
             # print("(" + str(cam0Id) + ", " + str(cam1Id) + "): " + str(score))
@@ -198,6 +205,9 @@ class ExternalCalibrator:
     def view_score(self, 
                    image_points: np.ndarray, 
                    image_resolution: Tuple):
+        
+        print( f"image points: {image_points.shape}")
+        print( f"image resolution: {image_resolution}")
         s = 0
         L = 3
         width, height = image_resolution
